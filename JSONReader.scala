@@ -13,17 +13,12 @@ object ValueType extends Enumeration {
     }
 import ValueType._
 
-class JSONReader(printer: String => Unit) extends org.scalastuff.json.JsonHandler {
+class JSONReader(cb: (String, ValueType, String) => Any) extends org.scalastuff.json.JsonHandler {
   var ctx = Stack[Tuple3[ContainerType,Long,String]]()
-  var res = ListBuffer[Tuple3[String,ValueType,String]]()
-  var currentKey = ""
-
-  def printStack() = {
-    printer(ctx.toList.toString)
-  }
-
+  val output = cb
+  
   def pushResult(t: ValueType, e: String) = {
-    res += ((getPath, t, e))
+    output(getPath, t, e)
   }
 
   def getPath() = {
@@ -38,17 +33,12 @@ class JSONReader(printer: String => Unit) extends org.scalastuff.json.JsonHandle
     paths.mkString(".")
   }
 
-  def printElem(e: String) = {
-    printer(s"${getPath} => ${e}")
-  }
-
   def incStack() = {
     if (!ctx.isEmpty) {
       val (t, i, k) = ctx.pop
       val ni = t match {
         case ArrayContainer => i + 1
         case ObjectContainer => i
-        case _ => { printer("ERROR"); System.exit(5); i; }
       }
       ctx.push((t,ni,k))
     }
@@ -103,6 +93,6 @@ class JSONReader(printer: String => Unit) extends org.scalastuff.json.JsonHandle
   }
 
   def error(message: String, line: Int, pos: Int, excerpt: String) {
-    printer(s"Error @ line ${line} position ${pos}: ${message}");
+    System.err.println(s"Error @ line ${line} position ${pos}: ${message}");
   }
 }
