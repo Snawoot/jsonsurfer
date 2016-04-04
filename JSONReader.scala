@@ -1,20 +1,31 @@
 import org.scalastuff.json.JsonHandler
-import scala.collection.mutable.Stack
+import scala.collection.mutable.{Stack,ListBuffer}
 
 object ContainerType extends Enumeration {
       type ContainerType = Value
-      val ObjectContainer, ArrayContainer, KeyContainer = Value
+      val ObjectContainer, ArrayContainer = Value
     }
 import ContainerType._
 
-class PrintingReader(printer: String => Unit) extends org.scalastuff.json.JsonHandler {
+object ValueType extends Enumeration {
+      type ValueType = Value
+      val TrueValue, FalseValue, NullValue, StringValue, NumberValue = Value
+    }
+import ValueType._
+
+class JSONReader(printer: String => Unit) extends org.scalastuff.json.JsonHandler {
   var ctx = Stack[Tuple3[ContainerType,Long,String]]()
+  var res = ListBuffer[Tuple3[String,ValueType,String]]()
   var currentKey = ""
 
   def printStack() = {
     printer(ctx.toList.toString)
   }
-  
+
+  def pushResult(t: ValueType, e: String) = {
+    res += ((getPath, t, e))
+  }
+
   def getPath() = {
     var paths = Stack[String]()
     for (c <- ctx) {
@@ -44,56 +55,51 @@ class PrintingReader(printer: String => Unit) extends org.scalastuff.json.JsonHa
   }
 
   def startObject() = {
-    printer("startObject")
     incStack
     ctx.push((ObjectContainer, 0, ""))
   }
 
   def startMember(name: String) = {
-    printer(s"startMember '${name}'")
     val (t, i, k) = ctx.pop
     ctx.push((t,i,name))
   }
 
   def endObject() = {
-    printer("endObject")
     ctx.pop
   }
 
   def startArray() = {
-    printer("startArray")
     incStack
     ctx.push((ArrayContainer, 0, ""))
   }
 
   def endArray() = {
-    printer("endArray")
     ctx.pop
   }
 
   def string(s: String) = {
     incStack
-    printElem(s"string = '${s}'")
+    pushResult(StringValue, s)
   }
 
   def number(n: String) = {
     incStack
-    printElem(s"number = ${n}")
+    pushResult(NumberValue, n)
   }
 
   def trueValue() = {
     incStack
-    printElem("true")
+    pushResult(TrueValue, "true")
   }
 
   def falseValue() = {
     incStack
-    printElem("false")
+    pushResult(FalseValue, "false")
   }
 
   def nullValue() = {
     incStack
-    printElem("null")
+    pushResult(NullValue, "null")
   }
 
   def error(message: String, line: Int, pos: Int, excerpt: String) {
