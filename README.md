@@ -5,6 +5,10 @@ During read SAX-parser tracks JSON path to current value. Values is getting filt
 
 This tool is intended for extracting data from huge JSON files that cannot fit into memory.
 
+## Installing
+jsonsurfer is distributed as standalone JAR assembly, suitable to be runned with modern Java Runtime Environment.
+You just have to [download](https://github.com/Snawoot/jsonsurfer/releases/download/v0.1/jsonsurfer-assembly-0.1.jar) and run it from command line.
+
 ## Building
 This application uses sbt as build tool.
 
