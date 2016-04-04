@@ -14,7 +14,7 @@ object jsonsurfer {
   def usage() = {
     val programsrc = new Exception().getStackTrace.head.getFileName
     val program = if (programsrc.endsWith(".scala")) programsrc.dropRight(6) else programsrc
-    perr(s"Usage: scala ${program} [ <filter regexp> [group key regexp] ]")
+    perr(s"Usage: java -jar ${program}.jar <json file> [ <filter regexp> [group key regexp] ]")
     System.exit(1)
   }
 
