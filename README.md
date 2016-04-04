@@ -43,7 +43,7 @@ $ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.1.jar example.jso
 ```
 
 Output is in following CSV format:
-* First column is group ID (see below).
+* First column is group ID ([see below](https://github.com/Snawoot/jsonsurfer/tree/master#group-by-common-part-of-path)).
 * Second column is path.
 * Third column is value.
 
