@@ -7,7 +7,7 @@ This tool is intended for extracting data from huge JSON files that cannot fit i
 
 ## Installing
 jsonsurfer is distributed as standalone JAR assembly, suitable to be runned with modern Java Runtime Environment.
-You just have to [download](https://github.com/Snawoot/jsonsurfer/releases/download/v0.1/jsonsurfer-assembly-0.1.jar) and run it from command line.
+You just have to [download](https://github.com/Snawoot/jsonsurfer/releases/download/v0.2/jsonsurfer-assembly-0.2.jar) and run it from command line.
 
 ## Building
 This application uses sbt as build tool.
@@ -17,7 +17,7 @@ To build standalone jar-file suitable for common Java VM you may issue `sbt asse
 ## Usage
 ### Syntax
 ```
-java -jar jsonsurfer-assembly-0.1.jar <filename> [ <filter regexp> [group key regexp] ]
+java -jar jsonsurfer-assembly-0.2.jar <filename> [ <filter regexp> [group key regexp] ]
 ```
 
 ### Examples
@@ -34,7 +34,7 @@ Let\`s assume we have JSON file names `example.json` with following content:
 #### Dump all keys and paths
 
 ```
-$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.1.jar example.json
+$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.2.jar example.json
 0,employees.0.firstName,"John"
 1,employees.0.lastName,"Doe"
 2,employees.0.age,32
@@ -55,7 +55,7 @@ Output is in following CSV format:
 
 Command below extracts only name and age fields.
 ```
-$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.1.jar example.json "employees\.\d+\.(firstName|age)"
+$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.2.jar example.json "employees\.\d+\.(firstName|age)"
 0,employees.0.firstName,"John"
 1,employees.0.age,32
 2,employees.1.firstName,"Anna"
@@ -66,7 +66,7 @@ $ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.1.jar example.jso
 
 #### Group by common part of path
 ```
-MacBook-Pro-user:~ user$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.1.jar example.json ".*" "(employees\.\d+).*"
+MacBook-Pro-user:~ user$ java -jar jsonsurfer/target/scala-2.10/jsonsurfer-assembly-0.2.jar example.json ".*" "(employees\.\d+).*"
 0,employees.0.firstName,"John"
 0,employees.0.lastName,"Doe"
 0,employees.0.age,32
