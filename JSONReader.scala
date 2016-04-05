@@ -1,4 +1,4 @@
-import org.scalastuff.json.JsonHandler
+import org.json.simple.parser.ContentHandler
 import scala.collection.mutable.{Stack,ListBuffer}
 
 object ContainerType extends Enumeration {
@@ -13,7 +13,7 @@ object ValueType extends Enumeration {
     }
 import ValueType._
 
-class JSONReader(cb: (String, ValueType, String) => Any) extends org.scalastuff.json.JsonHandler {
+class JSONReader(cb: (String, ValueType, String) => Boolean) extends org.json.simple.parser.ContentHandler {
   var ctx = Stack[Tuple3[ContainerType,Long,String]]()
   val output = cb
   
@@ -42,57 +42,55 @@ class JSONReader(cb: (String, ValueType, String) => Any) extends org.scalastuff.
       }
       ctx.push((t,ni,k))
     }
+    true
   }
 
   def startObject() = {
     incStack
     ctx.push((ObjectContainer, 0, ""))
+    true
   }
 
-  def startMember(name: String) = {
+  def startObjectEntry(name: String) = {
     val (t, i, k) = ctx.pop
     ctx.push((t,i,name))
+    true
   }
 
   def endObject() = {
     ctx.pop
+    true
   }
 
   def startArray() = {
     incStack
     ctx.push((ArrayContainer, 0, ""))
+    true
   }
 
   def endArray() = {
     ctx.pop
+    true
   }
 
-  def string(s: String) = {
+  def primitive(value: Any) = {
     incStack
-    pushResult(StringValue, s)
+    val (valtype, strval) = value match {
+      case v: String => (StringValue, v)
+      case v: Number => (NumberValue, v.toString())
+      case v: java.lang.Boolean => (if (v) TrueValue else FalseValue, v.toString())
+      case null => (NullValue, "null")
+      case _ => {
+        throw new Exception(s"Unknown type of value ${value.toString()}")
+        (NullValue, "null")
+        }
+    }
+    pushResult(valtype, strval)
   }
 
-  def number(n: String) = {
-    incStack
-    pushResult(NumberValue, n)
-  }
+  def endJSON() = { }
 
-  def trueValue() = {
-    incStack
-    pushResult(TrueValue, "true")
-  }
+  def startJSON() = { }
 
-  def falseValue() = {
-    incStack
-    pushResult(FalseValue, "false")
-  }
-
-  def nullValue() = {
-    incStack
-    pushResult(NullValue, "null")
-  }
-
-  def error(message: String, line: Int, pos: Int, excerpt: String) {
-    System.err.println(s"Error @ line ${line} position ${pos}: ${message}");
-  }
+  def endObjectEntry() = { true }
 }
