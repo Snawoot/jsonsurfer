@@ -33,7 +33,7 @@ object jsonsurfer {
         case StringValue => "(string)"
       }
       var valueRepr = if (vtype == StringValue) "\"" + value + "\"" else value
-      println(s"${groupID-1},${path},${valueRepr}")
+      println(s"${groupID},${path},${valueRepr}")
     }
     true
   }
